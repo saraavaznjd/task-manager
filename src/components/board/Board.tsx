@@ -1,26 +1,19 @@
-import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import ColumnComponent from "./Column";
 import { moveTask } from "../../features/board/boardSlice";
+
+
 
 const Board = () => {
   const board = useSelector((state: RootState) => state.board);
   const dispatch = useDispatch();
 
   const onDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
+    const { source, destination, draggableId } = result;
 
-    // اگر جایی رها نشده بود → هیچ کاری نکن
     if (!destination) return;
-
-    // اگر در همان موقعیت رها شده → هیچ کاری نکن
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
 
     dispatch(
       moveTask({
@@ -34,17 +27,29 @@ const Board = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-        {board.columnOrder.map((colId) => {
-          const column = board.columns[colId];
-          const tasks = column.taskIds.map((id) => board.tasks[id]);
+    <div className="w-full h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold mb-6">Task Manager</h1>
 
-          return <ColumnComponent key={colId} column={column} tasks={tasks} />;
-        })}
-      </div>
-    </DragDropContext>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex gap-4 overflow-x-auto pb-6 h-full">
+          {board.columnOrder.map((colId) => {
+            const column = board.columns[colId];
+            const tasks = column.taskIds.map((id) => board.tasks[id]);
+
+            return <ColumnComponent key={colId} column={column} tasks={tasks} />;
+          })}
+
+          {/* Add Column Button */}
+          <button
+            className="min-w-[250px] h-fit py-4 px-3 bg-white shadow-md rounded-xl border border-gray-300 hover:bg-gray-50 transition"
+          >
+            + Add Column
+          </button>
+        </div>
+      </DragDropContext>
+    </div>
   );
 };
 
 export default Board;
+
