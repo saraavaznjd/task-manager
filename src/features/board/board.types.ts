@@ -1,36 +1,36 @@
 export type Priority = "low" | "medium" | "high";
 
 export interface Tag {
-    id: string;
-    label: string;
-    color: string;
+  id: string;
+  label: string;
+  color: string;
 }
 
 export interface Task {
-    id: string;
-    title: string;
-    description?: string;
-    priority: Priority;
-    tagIds: string[];
-    deadline?: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  title: string;
+  description?: string;
+  priority: Priority;
+  tagIds: string[];
+  deadline?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 
 export interface Column {
-    id: string;
-    title: string;
-    taskIds: string[];
+  id: string;
+  title: string;
+  taskIds: string[];
 }
 
 export interface Board {
-    id: string;
-    title: string;
-    columnOrder: string[];
-    columns: Record<string, Column>;
-    tasks: Record<string, Task>;
-    tags: Record<string, Tag>; 
+  id: string;
+  title: string;
+  columnOrder: string[];
+  columns: Record<string, Column>;
+  tasks: Record<string, Task>;
+  tags: Record<string, Tag>;
 }
 
 
@@ -55,6 +55,10 @@ export const initialBoard: Board = {
       updatedAt: new Date().toISOString(),
     },
   },
-  tags: {},
+  tags: {
+    "tag-1": { id: "tag-1", label: "Frontend", color: "bg-blue-100 text-blue-700" },
+    "tag-2": { id: "tag-2", label: "Bug", color: "bg-red-100 text-red-700" },
+    "tag-3": { id: "tag-3", label: "UI", color: "bg-purple-100 text-purple-700" },
+  },
 };
 

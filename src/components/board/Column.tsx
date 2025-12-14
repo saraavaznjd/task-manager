@@ -4,6 +4,8 @@ import type { Column, Task } from "../../features/board/board.types";
 import { useState } from "react";
 import { Modal } from "../Modal";
 import { CreateTaskForm } from "../CreateTaskForm";
+import { useDispatch } from "react-redux";
+import { addTask } from "../../features/board/boardSlice";
 
 interface ColumnComponentProps {
     column: Column
@@ -12,15 +14,7 @@ interface ColumnComponentProps {
 
 const ColumnComponent = ({ column, tasks }: ColumnComponentProps) => {
     const [open, setOpen] = useState<boolean>(false);
-
-    const handleCreate = (data: any) => {
-        console.log("NEW TASK:", data);
-
-        // later:
-        // dispatch(addTask(data));
-
-        setOpen(false);
-    };
+    const dispatch = useDispatch()
 
     return (
         <div className="bg-gray-50 w-[260px] flex-shrink-0 rounded-xl shadow-sm border border-gray-200">
@@ -52,12 +46,17 @@ const ColumnComponent = ({ column, tasks }: ColumnComponentProps) => {
                 + Add Task
             </button>
             <Modal
-                open={open}
-                onClose={() => setOpen(false)}
-                title="Create New Task"
-            >
-                <CreateTaskForm onSubmit={handleCreate} />
-            </Modal>
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Create Task"
+      >
+        <CreateTaskForm
+          onSubmit={(data) => {
+            dispatch(addTask({ ...data, columnId: column.id }));
+            setOpen(false);
+          }}
+        />
+      </Modal>
         </div>
     );
 }

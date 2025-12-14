@@ -1,21 +1,34 @@
 import { useState } from "react";
-import type { Priority, Task } from "../features/board/board.types";
+import type { Priority } from "../features/board/board.types";
 import { PrioritySelect } from "./PrioritySelect";
+import { TagSelect } from "./TagSelect";
 
-interface Props {
-  onSubmit: (taskData: {
-    title: string;
-    description: string;
-    priority: Priority;
-    deadline?: string;
-  }) => void;
+interface TaskFormValues {
+  title: string;
+  description: string;
+  priority: Priority;
+  deadline?: string;
+  tags: string[];
 }
 
-export function CreateTaskForm({ onSubmit }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<Priority>("medium");
-  const [deadline, setDeadline] = useState("");
+interface Props {
+  initialValues?: TaskFormValues;
+  onSubmit: (data: TaskFormValues) => void;
+}
+
+
+
+export function CreateTaskForm({ onSubmit,initialValues }: Props) {
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [priority, setPriority] = useState<Priority>(
+    initialValues?.priority ?? "medium"
+  );
+  const [deadline, setDeadline] = useState(
+    initialValues?.deadline?.slice(0, 10) ?? ""
+  );
+  const [tags, setTags] = useState<string[]>(initialValues?.tags ?? []);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +37,7 @@ export function CreateTaskForm({ onSubmit }: Props) {
       title,
       description,
       priority,
+      tags,
       deadline: deadline ? new Date(deadline).toISOString() : undefined,
     });
   };
@@ -58,6 +72,13 @@ export function CreateTaskForm({ onSubmit }: Props) {
         <PrioritySelect value={priority} onChange={setPriority} />
       </div>
 
+      {/* Tags */}
+      <div>
+        <label className="text-sm font-medium">Tags</label>
+        <TagSelect value={tags} onChange={setTags} />
+      </div>
+
+
       {/* Deadline */}
       <div>
         <label className="text-sm font-medium">Deadline</label>
@@ -74,7 +95,7 @@ export function CreateTaskForm({ onSubmit }: Props) {
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded"
       >
-        Create Task
+        {initialValues ? 'Edit Task' : 'Create Task'}
       </button>
     </form>
   );
