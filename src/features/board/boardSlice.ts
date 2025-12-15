@@ -63,6 +63,21 @@ export const boardSlice = createSlice({
             task.updatedAt = new Date().toISOString();
         },
 
+        deleteTask: (
+            state,
+            action: PayloadAction<{ taskId: string; columnId: string }>
+        ) => {
+            const { taskId, columnId } = action.payload;
+
+            // Delete from tasks map
+            delete state.tasks[taskId];
+
+            //Delete from column
+            state.columns[columnId].taskIds =
+                state.columns[columnId].taskIds.filter((id) => id !== taskId);
+        },
+
+
         addColumn: (state, action: PayloadAction<Column>) => {
             const column = action.payload
             state.columns[column.id] = column
@@ -81,5 +96,5 @@ export const boardSlice = createSlice({
     }
 })
 
-export const { addTask, editTask, addColumn, moveTask } = boardSlice.actions
+export const { addTask, editTask, addColumn, deleteTask, moveTask } = boardSlice.actions
 export default boardSlice.reducer

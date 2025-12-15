@@ -33,7 +33,7 @@ const ColumnComponent = ({ column, tasks }: ColumnComponentProps) => {
                         {...provided.droppableProps}
                     >
                         {tasks.map((task, index) => (
-                            <TaskCard key={task.id} task={task} index={index} />
+                            <TaskCard key={task.id} task={task} index={index} columnId={column.id} />
                         ))}
 
                         {provided.placeholder}
@@ -46,17 +46,17 @@ const ColumnComponent = ({ column, tasks }: ColumnComponentProps) => {
                 + Add Task
             </button>
             <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title="Create Task"
-      >
-        <CreateTaskForm
-          onSubmit={(data) => {
-            dispatch(addTask({ ...data, columnId: column.id }));
-            setOpen(false);
-          }}
-        />
-      </Modal>
+                open={open}
+                onClose={() => setOpen(false)}
+                title="Create Task"
+            >
+                <CreateTaskForm
+                    onSubmit={(data) => {
+                        dispatch(addTask({ ...data, columnId: column.id }));
+                        setOpen(false);
+                    }}
+                />
+            </Modal>
         </div>
     );
 }
