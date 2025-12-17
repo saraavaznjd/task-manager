@@ -6,6 +6,7 @@ import { Modal } from "../Modal";
 import { CreateTaskForm } from "../CreateTaskForm";
 import { useDispatch } from "react-redux";
 import { addTask } from "../../features/board/boardSlice";
+import { EmptyColumn } from "./EmptyColumn";
 
 interface ColumnComponentProps {
     column: Column
@@ -32,9 +33,13 @@ const ColumnComponent = ({ column, tasks }: ColumnComponentProps) => {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
-                        {tasks.map((task, index) => (
-                            <TaskCard key={task.id} task={task} index={index} columnId={column.id} />
-                        ))}
+                        {tasks.length === 0 ? (
+                            <EmptyColumn />
+                        ) : (
+                            tasks.map((task, index) => (
+                                <TaskCard key={task.id} task={task} index={index} columnId={column.id} />
+                            ))
+                        )}
 
                         {provided.placeholder}
                     </div>

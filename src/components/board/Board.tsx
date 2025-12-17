@@ -57,12 +57,15 @@ const Board = () => {
       <BoardFilters onChange={setFilters} />
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-6 h-full">
+        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory h-full">
           {board.columnOrder.map((colId) => {
             const column = board.columns[colId];
             const tasks = column.taskIds.map((id) => board.tasks[id]).filter(matches);
 
-            return <ColumnComponent key={colId} column={column} tasks={tasks} />;
+            return (<div key={colId} className="h-full snap-start min-w-[280px]">
+                      <ColumnComponent column={column} tasks={tasks} />
+                    </div>)
+
           })}
 
           {/* Add Column Button */}

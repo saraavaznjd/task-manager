@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Listbox } from "@headlessui/react";
+import { ListboxButton, ListboxOption, Listbox , ListboxOptions} from "@headlessui/react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
 import type { Priority } from "../features/board/board.types";
@@ -45,20 +45,20 @@ export function BoardFilters({
         }}
       >
         <div className="relative">
-          <Listbox.Button className="border rounded px-3 py-2">
+          <ListboxButton className="border rounded px-3 py-2">
             Priority: {priority}
-          </Listbox.Button>
-          <Listbox.Options className="absolute mt-1 bg-white border rounded shadow">
+          </ListboxButton>
+          <ListboxOptions className="absolute mt-1 bg-white border rounded shadow z-10">
             {priorities.map((p) => (
-              <Listbox.Option
+              <ListboxOption
                 key={p}
                 value={p}
                 className="px-3 py-2 cursor-pointer hover:bg-gray-100"
               >
                 {p}
-              </Listbox.Option>
+              </ListboxOption>
             ))}
-          </Listbox.Options>
+          </ListboxOptions>
         </div>
       </Listbox>
 
@@ -72,12 +72,12 @@ export function BoardFilters({
         multiple
       >
         <div className="relative">
-          <Listbox.Button className="border rounded px-3 py-2">
+          <ListboxButton className="border rounded px-3 py-2">
             Tags ({tagIds.length})
-          </Listbox.Button>
-          <Listbox.Options className="absolute mt-1 bg-white border rounded shadow">
+          </ListboxButton>
+          <ListboxOptions className="absolute mt-1 bg-white border rounded shadow z-10">
             {tags.map((t) => (
-              <Listbox.Option
+              <ListboxOption
                 key={t.id}
                 value={t.id}
                 className="px-3 py-2 cursor-pointer hover:bg-gray-100"
@@ -85,9 +85,9 @@ export function BoardFilters({
                 <span className={`px-2 py-1 rounded text-xs ${t.color}`}>
                   {t.label}
                 </span>
-              </Listbox.Option>
+              </ListboxOption>
             ))}
-          </Listbox.Options>
+          </ListboxOptions>
         </div>
       </Listbox>
     </div>

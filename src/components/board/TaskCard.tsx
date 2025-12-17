@@ -30,7 +30,11 @@ const TaskCard = ({ task, index, columnId }: TaskCardProps) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="relative bg-white p-3 mb-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer"
+          className="
+            bg-white p-3 mb-3 rounded-lg border shadow-sm
+            hover:shadow-md hover:-translate-y-0.5
+            transition-all
+            cursor-pointer"
         >
           <p className="font-medium text-gray-800">{task.title}</p>
 
