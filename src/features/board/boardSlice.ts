@@ -81,6 +81,7 @@ export const boardSlice = createSlice({
         addColumn: (state, action: PayloadAction<Column>) => {
             const column = action.payload
             state.columns[column.id] = column
+            state.columnOrder.push(column.id)
         },
 
         moveTask: (state, action: PayloadAction<MoveTaskPayload>) => {
@@ -92,9 +93,47 @@ export const boardSlice = createSlice({
             sourceTasks.splice(sourceIndex, 1)
             //add to destination
             destTasks.splice(destIndex, 0, taskId)
-        }
+        },
+
+        renameColumn: (state, action: PayloadAction<{ columnId: string; title: string }>) => {
+            state.columns[action.payload.columnId].title = action.payload.title;
+        },
+
+        deleteColumn: (state, action: PayloadAction<{ columnId: string }>) => {
+            const { columnId } = action.payload;
+            const column = state.columns[columnId];
+            if (!column) return;
+
+            // Delete Tasks
+            column.taskIds.forEach((id) => {
+                delete state.tasks[id];
+            });
+
+            // Delete column
+            delete state.columns[columnId];
+
+            // Delete from order
+            state.columnOrder = state.columnOrder.filter(
+                (id) => id !== columnId
+            );
+        },
+
+        reorderColumns: (state, action: PayloadAction<{ sourceIndex: number; destinationIndex: number; }>) => {
+            const [moved] = state.columnOrder.splice(
+                action.payload.sourceIndex,
+                1
+            );
+
+            state.columnOrder.splice(
+                action.payload.destinationIndex,
+                0,
+                moved
+            );
+        },
+
+
     }
 })
 
-export const { addTask, editTask, addColumn, deleteTask, moveTask } = boardSlice.actions
+export const { addTask, editTask, addColumn, deleteTask, moveTask, renameColumn, deleteColumn,reorderColumns } = boardSlice.actions
 export default boardSlice.reducer

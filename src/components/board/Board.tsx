@@ -1,13 +1,17 @@
-import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import ColumnComponent from "./Column";
-import { moveTask } from "../../features/board/boardSlice";
+import { addColumn, moveTask } from "../../features/board/boardSlice";
 import { useState } from "react";
 import { BoardFilters } from "../BoardFilters";
 import type { Priority, Task } from "../../features/board/board.types";
+import { reorderColumns } from "../../features/board/boardSlice";
+import { Modal } from "../Modal";
 
 const Board = () => {
+  const [open, setOpen] = useState<boolean>(false)
+  const [title, setTitle] = useState<string>("")
   const board = useSelector((state: RootState) => state.board);
   const dispatch = useDispatch();
   const [filters, setFilters] = useState({
@@ -35,10 +39,23 @@ const Board = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination, draggableId } = result;
+    const { destination, source, draggableId, type } = result;
 
     if (!destination) return;
 
+    // Columns
+    if (type === "COLUMN") {
+      if (destination.index === source.index) return;
+
+      dispatch(
+        reorderColumns({
+          sourceIndex: source.index,
+          destinationIndex: destination.index,
+        })
+      );
+      return;
+    }
+    //Tasks
     dispatch(
       moveTask({
         sourceColId: source.droppableId,
@@ -57,25 +74,67 @@ const Board = () => {
       <BoardFilters onChange={setFilters} />
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory h-full">
-          {board.columnOrder.map((colId) => {
-            const column = board.columns[colId];
-            const tasks = column.taskIds.map((id) => board.tasks[id]).filter(matches);
+        <Droppable
+          droppableId="board"
+          direction="horizontal"
+          type="COLUMN"
+        >
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="flex gap-4 overflow-x-auto"
+            >
+              {board.columnOrder.map((colId, index) => {
+                const column = board.columns[colId];
+                const tasks = column.taskIds.map((id) => board.tasks[id]).filter(matches);
 
-            return (<div key={colId} className="h-full snap-start min-w-[280px]">
-                      <ColumnComponent column={column} tasks={tasks} />
-                    </div>)
+                return (<div key={colId} className="h-full snap-start min-w-[280px]">
+                  <ColumnComponent column={column} tasks={tasks} index={index} />
+                </div>)
 
-          })}
-
-          {/* Add Column Button */}
-          <button
-            className="min-w-[250px] h-fit py-4 px-3 bg-white shadow-md rounded-xl border border-gray-300 hover:bg-gray-50 transition"
-          >
-            + Add Column
-          </button>
-        </div>
+              })}
+              {provided.placeholder}
+              {/* Add Column Button */}
+              <button onClick={() => setOpen(true)}
+                className="min-w-[250px] h-fit py-4 px-3 bg-white shadow-md rounded-xl border border-gray-300 hover:bg-gray-50 transition"
+              >
+                + Add Column
+              </button>
+              <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+                title="Add Column"
+              >
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    dispatch(addColumn({
+                      id: title,
+                      title: title,
+                      taskIds: [],
+                    }));
+                    setOpen(false);
+                  }}
+                  className="space-y-3"
+                >
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full border rounded px-3 py-2"
+                    autoFocus
+                  />
+                  <button className="w-full bg-blue-600 text-white py-2 rounded">
+                    Add
+                  </button>
+                </form>
+              </Modal>
+            </div>
+          )}
+        </Droppable>
       </DragDropContext>
+
+
     </div>
   );
 };
