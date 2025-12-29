@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import boardReducer from "../features/board/boardSlice";
-import { loadState, saveState } from "./localStorage";
+import authReducer from "../features/auth/authSlice";
+import { loadState, saveBoard, saveUser } from "./localStorage";
 
 const preloadedState = loadState()
 
@@ -9,6 +10,7 @@ const preloadedState = loadState()
 export const store = configureStore({
   reducer: {
     board: boardReducer,
+    auth: authReducer
   },
   preloadedState: preloadedState ?
     { board: preloadedState } :
@@ -16,8 +18,10 @@ export const store = configureStore({
 });
 
 store.subscribe(() => {
-  saveState(store.getState().board)
-})
+  saveUser(store.getState().auth.user);
+  saveBoard(store.getState().board);
+});
+
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

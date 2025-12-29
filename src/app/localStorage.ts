@@ -12,10 +12,29 @@ export function loadState(): Board | undefined {
   }
 }
 
-export function saveState(state: Board) {
+export function saveBoard(state: Board) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
     // ignore write errors
   }
 }
+
+const USER_KEY = "auth-user";
+
+export const loadUser = () => {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const saveUser = (user: any) => {
+  if (user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(USER_KEY);
+  }
+};
